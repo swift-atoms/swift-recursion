@@ -3,6 +3,6 @@ import Product
 
 @attached(member, names: arbitrary)
 public macro Recursion() = #externalMacro(
-    module: "Recursion_Derivation_Macros",
+    module: "Recursion_Macro_Plugin",
     type: "Macro"
 )

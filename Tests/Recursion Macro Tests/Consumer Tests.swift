@@ -1,6 +1,6 @@
 import Either
 import Product
-import Recursion_Derivation
+import Recursion_Macro
 import Testing
 
 @Recursion
