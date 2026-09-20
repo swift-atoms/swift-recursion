@@ -10,7 +10,7 @@ public struct Macro: MemberAttributeMacro {
         providingAttributesFor member: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [AttributeSyntax] {
-        try RecursiveShape.validateNamespace(declaration)
+        try Type.Syntax.Recursion.validateNamespace(declaration)
         if declaration.memberBlock.members.contains(where: { $0.decl.is(EnumCaseDeclSyntax.self) }) {
             throw MacroExpansionErrorMessage("@Recursion attaches prerequisites to nested enums; apply it to their namespace, not to the recursive enum itself.")
         }

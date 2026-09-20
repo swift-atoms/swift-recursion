@@ -4,7 +4,7 @@ import Testing
 @Test(arguments: [
         ("Mixed Variance", "wrong variance position"),
         ("Unknown Fold", "unsupported type constructor"),
-        ("Function Traversal", "finite polynomial positions"),
+        ("Function Traversal", "finite traversable positions"),
         ("Sum Monoid", "product monoids"),
         ("Metadata Representation", "homogeneous product"),
         ("Infinite Enumeration", "recursive types"),

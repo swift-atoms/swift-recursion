@@ -4,19 +4,22 @@ import SwiftSyntaxBuilder
 
 public enum Derivation {
     public static func members(of declaration: some DeclGroupSyntax) throws -> [DeclSyntax] {
-        guard let enumeration = declaration.as(EnumDeclSyntax.self) else { throw AlgebraDiagnostic("@Zipper requires a regular recursive enum") }
-        try RecursiveShape.validate(enumeration)
+        guard let enumeration = declaration.as(EnumDeclSyntax.self) else { throw Type.Failure("@Zipper requires a regular recursive enum") }
+        try Type.Syntax.Recursion.validate(enumeration)
         guard enumeration.inheritanceClause?.inheritedTypes.contains(where: { $0.type.trimmedDescription == "~Copyable" || $0.type.trimmedDescription == "~Escapable" }) != true else {
-            throw AlgebraDiagnostic("@Zipper's persistent navigation requires Copyable, Escapable values; an owned zipper needs an explicit ownership design")
+            throw Type.Failure("@Zipper's persistent navigation requires Copyable, Escapable values; an owned zipper needs an explicit ownership design")
         }
         let type = enumeration.name.text
-        let access = RecursiveShape.access(of: enumeration)
+        let access = Type.Syntax.Recursion.access(of: enumeration)
         var contexts: [String] = []
         var descending: [String] = []
         var ascending: [String] = []
-        for item in RecursiveShape.elements(of: enumeration) {
-            let parameters = RecursiveShape.parameters(of: item)
-            let recursive = parameters.indices.filter { RecursiveShape.isRecursive(parameters[$0].type, in: enumeration) }
+        let variable = Type.Variable("Recursion")
+        let polynomial = try Type.Syntax.Recursion.polynomial(of: enumeration, variable: variable)
+        let holes = try polynomial.contexts(for: variable)
+        for (alternative, item) in Type.Syntax.Recursion.elements(of: enumeration).enumerated() {
+            let parameters = Type.Syntax.Recursion.parameters(of: item)
+            let recursive = holes.filter { $0.alternative == alternative }.map(\.position)
             if recursive.isEmpty { descending.append("case .\(item.name.text): return nil"); continue }
             let bindings = parameters.indices.map { "value\($0)" }
             let cases = recursive.enumerated().map { ordinal, hole -> String in
@@ -26,7 +29,7 @@ public enum Derivation {
                 contexts.append("case \(name)" + (others.isEmpty ? "" : "(\(payload))"))
                 let pattern = others.isEmpty ? ".\(name)" : "let .\(name)(\(others.map { bindings[$0] }.joined(separator: ", ")))"
                 let arguments = parameters.indices.map { index in
-                    (RecursiveShape.label(of: parameters[index]).map { "\($0): " } ?? "") + (index == hole ? "focus" : bindings[index])
+                    (Type.Syntax.Recursion.label(of: parameters[index]).map { "\($0): " } ?? "") + (index == hole ? "focus" : bindings[index])
                 }.joined(separator: ", ")
                 ascending.append("case \(pattern): parent.focus = .\(item.name.text)(\(arguments))")
                 let context = ".\(name)" + (others.isEmpty ? "" : "(\(others.map { bindings[$0] }.joined(separator: ", ")))")
@@ -41,7 +44,7 @@ public enum Derivation {
                     return child
                 """)
         }
-        guard !contexts.isEmpty else { throw AlgebraDiagnostic("@Zipper requires at least one direct recursive position") }
+        guard !contexts.isEmpty else { throw Type.Failure("@Zipper requires at least one direct recursive position") }
         return [DeclSyntax(stringLiteral: """
             \(access)struct Zipper {
                 \(access)private(set) var focus: \(type)
