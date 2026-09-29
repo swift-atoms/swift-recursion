@@ -6,7 +6,7 @@ import Testing
         ("Unknown Fold", "unsupported type constructor"),
         ("Function Traversal", "finite traversable positions"),
         ("Sum Monoid", "product monoids"),
-        ("Metadata Representation", "homogeneous product"),
+        ("Metadata Representation", "homogeneous stored coordinates"),
         ("Infinite Enumeration", "recursive types"),
         ("No Hole", "recursive position"),
         ("Nonuniform Recursion", "direct regular payloads"),
