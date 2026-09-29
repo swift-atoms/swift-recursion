@@ -1,3 +1,4 @@
+#if os(macOS)
 import Foundation
 import Testing
 
@@ -43,3 +44,4 @@ func unsupportedDerivationsFailAtTheAlgebraBoundary(_ fixture: String, _ expecte
     #expect(!diagnostic.contains("no such module"), "Fixture could not load its workspace modules: \(diagnostic)")
     #expect(diagnostic.contains(expected), "Expected \(expected), got: \(diagnostic)")
 }
+#endif
