@@ -21,7 +21,6 @@ public enum RecursionScheme {
     case histomorphism, futumorphism, hylomorphism, zygomorphism, chronomorphism
 }
 
-/// Installs each prerequisite once on every direct enum member of a namespace.
 @attached(memberAttribute)
 public macro Recursion(_ schemes: RecursionScheme...) = #externalMacro(
     module: "Recursion_Macro_Plugin", type: "Macro"
