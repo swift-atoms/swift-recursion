@@ -3,7 +3,9 @@ import Recursion_Macro_Core
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-public struct Macro: MemberAttributeMacro {
+public struct Macro: MemberAttributeMacro {}
+
+extension Macro {
     public static func expansion(
         of node: AttributeSyntax,
         attachedTo declaration: some DeclGroupSyntax,

@@ -40,7 +40,7 @@ let package = Package(
     ],
     targets: [
         .testTarget(name: "Derivation Compiler Tests", dependencies: [
-            "Zipper Macro",
+            .target(name: "Zipper Macro"),
             .product(name: "Functor Macro", package: "swift-functor"),
             .product(name: "Functor Base Macro", package: "swift-functor"),
             .product(name: "Invariant Macro", package: "swift-functor"),
@@ -52,13 +52,13 @@ let package = Package(
             .product(name: "Finite Macro", package: "swift-finite"),
         ], resources: [.copy("Fixtures")]),
         .testTarget(name: "Zipper Macro Tests", dependencies: [
-            "Zipper Macro",
+            .target(name: "Zipper Macro"),
         ]),
         .target(name: "Zipper Macro", dependencies: [
-            "Zipper Macro Plugin",
+            .target(name: "Zipper Macro Plugin"),
         ]),
         .macro(name: "Zipper Macro Plugin", dependencies: [
-            "Zipper Macro Core",
+            .target(name: "Zipper Macro Core"),
             .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
             .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
             .product(name: "SwiftSyntax", package: "swift-syntax"),
@@ -73,7 +73,7 @@ let package = Package(
         ]),
         .macro(name: "Recursion Macro Plugin", dependencies: [
             .product(name: "Type Algebra Syntax", package: "swift-algebra"),
-            "Recursion Macro Core",
+            .target(name: "Recursion Macro Core"),
             .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
             .product(name: "SwiftSyntax", package: "swift-syntax"),
             .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
@@ -93,12 +93,12 @@ let package = Package(
                 .product(name: "Corecursive Macro", package: "swift-corecursive"),
                 .product(name: "Recursive Macro", package: "swift-recursive"),
                 .product(name: "Functor Base Macro", package: "swift-functor"),
-            "Recursion Macro Plugin",
+            .target(name: "Recursion Macro Plugin"),
             .product(name: "Either", package: "swift-either"),
             .product(name: "Product", package: "swift-product"),
         ]),
         .testTarget(name: "Recursion Macro Tests", dependencies: [
-            "Recursion Macro",
+            .target(name: "Recursion Macro"),
             .product(name: "Either", package: "swift-either"),
             .product(name: "Product", package: "swift-product"),
         ]),
@@ -107,21 +107,14 @@ let package = Package(
 )
 
 for target in package.targets where ![.system, .binary, .plugin, .macro].contains(target.type) {
-    let ecosystem: [SwiftSetting] = [
+    target.swiftSettings = (target.swiftSettings ?? []) + [
         .strictMemorySafety(),
         .enableUpcomingFeature("ExistentialAny"),
         .enableUpcomingFeature("InternalImportsByDefault"),
         .enableUpcomingFeature("MemberImportVisibility"),
         .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-        .enableExperimentalFeature("Lifetimes"),
         .enableUpcomingFeature("InferIsolatedConformances"),
+        .enableExperimentalFeature("Lifetimes"),
+        .treatAllWarnings(as: .error),
     ]
-    let package: [SwiftSetting] = []
-
-    target.swiftSettings = (target.swiftSettings ?? []) + ecosystem + package
-}
-
-// Consumer compilation must reject visibility regressions, even when other packages suppress warnings.
-for target in package.targets where target.type == .test || target.name.hasSuffix("Consumer Fixtures") {
-    target.swiftSettings = (target.swiftSettings ?? []) + [.treatAllWarnings(as: .error)]
 }

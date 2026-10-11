@@ -2,7 +2,9 @@ import Type_Algebra_Syntax
 public import SwiftSyntax
 import SwiftSyntaxBuilder
 
-public enum Derivation {
+public enum Derivation {}
+
+extension Derivation {
     public static func members(of declaration: some DeclGroupSyntax) throws -> [DeclSyntax] {
         guard let enumeration = declaration.as(EnumDeclSyntax.self) else { throw Type.Failure("@Zipper requires a regular recursive enum") }
         try Type.Syntax.Recursion.validate(enumeration)

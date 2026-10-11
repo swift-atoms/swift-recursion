@@ -1,6 +1,8 @@
 public import SwiftSyntax
 
-public enum Derivation {
+public enum Derivation {}
+
+extension Derivation {
     private static let prerequisites: [String: [String]] = [
         "FunctorBase": [],
         "Recursive": ["FunctorBase"],
