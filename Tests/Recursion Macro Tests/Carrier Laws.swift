@@ -1,14 +1,24 @@
 import Recursion_Macro
 import Testing
+
 @Recursion
 private enum Laws {
-    indirect enum Tree: Equatable { case leaf(Int); case node(Tree, Tree) }
+    indirect enum Tree: Equatable {
+        case leaf(Int)
+        case node(Tree, Tree)
+    }
 }
 private typealias T = Laws.Tree
 private func render(_ free: T.Free<Int>) -> String {
-    free.fold(pure: { "p\($0)" }, suspend: { layer in
-        switch layer { case .leaf(let n): "l\(n)"; case .node(let l, let r): "(\(l),\(r))" }
-    })
+    free.fold(
+        pure: { "p\($0)" },
+        suspend: { layer in
+            switch layer {
+            case .leaf(let n): "l\(n)"
+            case .node(let l, let r): "(\(l),\(r))"
+            }
+        }
+    )
 }
 private func render(_ cofree: T.Cofree<Int>) -> String {
     switch cofree {
@@ -45,7 +55,10 @@ private func render(_ cofree: T.Cofree<Int>) -> String {
 @Test func recursiveEquationsAndFusedChronoAgreeOnFiniteTrees() {
     let samples: [T] = [.leaf(1), .node(.leaf(2), .leaf(3)), .node(.node(.leaf(1), .leaf(2)), .leaf(3))]
     let algebra: (T.Base<Int>) -> Int = { layer in
-        switch layer { case .leaf(let n): n; case .node(let l, let r): l + r }
+        switch layer {
+        case .leaf(let n): n
+        case .node(let l, let r): l + r
+        }
     }
     for sample in samples {
         #expect(T.embed(sample.project()) == sample)
@@ -54,7 +67,10 @@ private func render(_ cofree: T.Cofree<Int>) -> String {
     }
     let future: (Int) -> T.Base<T.Free<Int>> = { n in n == 0 ? .leaf(1) : .node(.pure(n - 1), .suspend(.leaf(2))) }
     let history: (T.Base<T.Cofree<Int>>) -> Int = { layer in
-        switch layer { case .leaf(let n): n; case .node(let l, let r): l.extract + r.extract }
+        switch layer {
+        case .leaf(let n): n
+        case .node(let l, let r): l.extract + r.extract
+        }
     }
     for seed in 0...4 {
         #expect(T.chronomorphism(seed, coalgebra: future, algebra: history) == T.futumorphism(seed, future).histomorphism(history))

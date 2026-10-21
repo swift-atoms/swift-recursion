@@ -1,7 +1,7 @@
-import Type_Algebra_Syntax
 import Recursion_Macro_Core
 import SwiftSyntax
 import SwiftSyntaxMacros
+import Type_Algebra_Syntax
 
 public struct Macro: MemberAttributeMacro {}
 
@@ -18,7 +18,7 @@ extension Macro {
         }
         guard let enumeration = member.as(EnumDeclSyntax.self) else { return [] }
         let requested: [String]
-        if case let .argumentList(arguments) = node.arguments, !arguments.isEmpty {
+        if case .argumentList(let arguments) = node.arguments, !arguments.isEmpty {
             requested = try arguments.map { argument in
                 guard let selection = argument.expression.as(MemberAccessExprSyntax.self) else {
                     throw MacroExpansionErrorMessage("@Recursion expects scheme selections such as .catamorphism.")

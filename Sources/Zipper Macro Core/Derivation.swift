@@ -1,6 +1,6 @@
-import Type_Algebra_Syntax
 public import SwiftSyntax
 import SwiftSyntaxBuilder
+import Type_Algebra_Syntax
 
 public enum Derivation {}
 
@@ -22,7 +22,10 @@ extension Derivation {
         for (alternative, item) in Type.Syntax.Recursion.elements(of: enumeration).enumerated() {
             let parameters = Type.Syntax.Recursion.parameters(of: item)
             let recursive = holes.filter { $0.alternative == alternative }.map(\.position)
-            if recursive.isEmpty { descending.append("case .\(item.name.text): return nil"); continue }
+            if recursive.isEmpty {
+                descending.append("case .\(item.name.text): return nil")
+                continue
+            }
             let bindings = parameters.indices.map { "value\($0)" }
             let cases = recursive.enumerated().map { ordinal, hole -> String in
                 let name = "\(item.name.text)_\(hole)"
@@ -37,42 +40,48 @@ extension Derivation {
                 let context = ".\(name)" + (others.isEmpty ? "" : "(\(others.map { bindings[$0] }.joined(separator: ", ")))")
                 return "case \(ordinal): child.contexts.append(\(context)); child.focus = \(bindings[hole])"
             }
-            descending.append("""
+            descending.append(
+                """
                 case let .\(item.name.text)(\(bindings.joined(separator: ", "))):
                     var child = self
                     switch index { \(cases.joined(separator: "\n"))
                     default: return nil
                     }
                     return child
-                """)
+                """
+            )
         }
         guard !contexts.isEmpty else { throw Type.Failure("@Zipper requires at least one direct recursive position") }
-        return [DeclSyntax(stringLiteral: """
-            \(access)struct Zipper {
-                \(access)private(set) var focus: \(type)
-                private var contexts: [Context] = []
-                private enum Context { \(contexts.joined(separator: "\n")) }
-                \(access)init(_ focus: \(type)) { self.focus = focus }
-                \(access)var depth: Int { contexts.count }
-                /// Zero-based index among this constructor's recursive children.
-                \(access)func down(_ index: Int) -> Self? {
-                    switch focus { \(descending.joined(separator: "\n")) }
-                }
-                \(access)func replacing(_ value: \(type)) -> Self {
-                    var result = self; result.focus = value; return result
-                }
-                \(access)func up() -> Self? {
-                    var parent = self
-                    guard let context = parent.contexts.popLast() else { return nil }
-                    switch context { \(ascending.joined(separator: "\n")) }
-                    return parent
-                }
-                \(access)func root() -> \(type) {
-                    var cursor = self
-                    while let parent = cursor.up() { cursor = parent }
-                    return cursor.focus
-                }
-            }
-            """), DeclSyntax(stringLiteral: "\(access)var zipper: Zipper { Zipper(self) }")]
+        return [
+            DeclSyntax(
+                stringLiteral: """
+                    \(access)struct Zipper {
+                        \(access)private(set) var focus: \(type)
+                        private var contexts: [Context] = []
+                        private enum Context { \(contexts.joined(separator: "\n")) }
+                        \(access)init(_ focus: \(type)) { self.focus = focus }
+                        \(access)var depth: Int { contexts.count }
+                        /// Zero-based index among this constructor's recursive children.
+                        \(access)func down(_ index: Int) -> Self? {
+                            switch focus { \(descending.joined(separator: "\n")) }
+                        }
+                        \(access)func replacing(_ value: \(type)) -> Self {
+                            var result = self; result.focus = value; return result
+                        }
+                        \(access)func up() -> Self? {
+                            var parent = self
+                            guard let context = parent.contexts.popLast() else { return nil }
+                            switch context { \(ascending.joined(separator: "\n")) }
+                            return parent
+                        }
+                        \(access)func root() -> \(type) {
+                            var cursor = self
+                            while let parent = cursor.up() { cursor = parent }
+                            return cursor.focus
+                        }
+                    }
+                    """
+            ), DeclSyntax(stringLiteral: "\(access)var zipper: Zipper { Zipper(self) }"),
+        ]
     }
 }

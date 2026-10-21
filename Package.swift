@@ -39,46 +39,70 @@ let package = Package(
         .package(url: "https://github.com/swiftlang/swift-syntax.git", "603.0.2"..<"604.0.0"),
     ],
     targets: [
-        .testTarget(name: "Derivation Compiler Tests", dependencies: [
-            .target(name: "Zipper Macro"),
-            .product(name: "Functor Macro", package: "swift-functor"),
-            .product(name: "Functor Base Macro", package: "swift-functor"),
-            .product(name: "Invariant Macro", package: "swift-functor"),
-            .product(name: "Traversable Macro", package: "swift-functor"),
-            .product(name: "Representable Macro", package: "swift-functor"),
-            .product(name: "Foldable Macro", package: "swift-foldable"),
-            .product(name: "Contravariant Macro", package: "swift-contravariant"),
-            .product(name: "Monoid Macro", package: "swift-algebra"),
-            .product(name: "Finite Macro", package: "swift-finite"),
-        ], resources: [.copy("Fixtures")]),
-        .testTarget(name: "Zipper Macro Tests", dependencies: [
-            .target(name: "Zipper Macro"),
-        ]),
-        .target(name: "Zipper Macro", dependencies: [
-            .target(name: "Zipper Macro Plugin"),
-        ]),
-        .macro(name: "Zipper Macro Plugin", dependencies: [
-            .target(name: "Zipper Macro Core"),
-            .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
-            .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-            .product(name: "SwiftSyntax", package: "swift-syntax"),
-        ]),
-        .target(name: "Zipper Macro Core", dependencies: [
-            .product(name: "SwiftSyntax", package: "swift-syntax"),
-            .product(name: "SwiftSyntaxBuilder", package: "swift-syntax"),
-            .product(name: "Type Algebra Syntax", package: "swift-algebra"),
-        ]),
-        .target(name: "Recursion Macro Core", dependencies: [
-            .product(name: "SwiftSyntax", package: "swift-syntax"),
-        ]),
-        .macro(name: "Recursion Macro Plugin", dependencies: [
-            .product(name: "Type Algebra Syntax", package: "swift-algebra"),
-            .target(name: "Recursion Macro Core"),
-            .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
-            .product(name: "SwiftSyntax", package: "swift-syntax"),
-            .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-        ]),
-        .target(name: "Recursion Macro", dependencies: [
+        .testTarget(
+            name: "Derivation Compiler Tests",
+            dependencies: [
+                .target(name: "Zipper Macro"),
+                .product(name: "Functor Macro", package: "swift-functor"),
+                .product(name: "Functor Base Macro", package: "swift-functor"),
+                .product(name: "Invariant Macro", package: "swift-functor"),
+                .product(name: "Traversable Macro", package: "swift-functor"),
+                .product(name: "Representable Macro", package: "swift-functor"),
+                .product(name: "Foldable Macro", package: "swift-foldable"),
+                .product(name: "Contravariant Macro", package: "swift-contravariant"),
+                .product(name: "Monoid Macro", package: "swift-algebra"),
+                .product(name: "Finite Macro", package: "swift-finite"),
+            ],
+            resources: [.copy("Fixtures")]
+        ),
+        .testTarget(
+            name: "Zipper Macro Tests",
+            dependencies: [
+                .target(name: "Zipper Macro")
+            ]
+        ),
+        .target(
+            name: "Zipper Macro",
+            dependencies: [
+                .target(name: "Zipper Macro Plugin")
+            ]
+        ),
+        .macro(
+            name: "Zipper Macro Plugin",
+            dependencies: [
+                .target(name: "Zipper Macro Core"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+            ]
+        ),
+        .target(
+            name: "Zipper Macro Core",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxBuilder", package: "swift-syntax"),
+                .product(name: "Type Algebra Syntax", package: "swift-algebra"),
+            ]
+        ),
+        .target(
+            name: "Recursion Macro Core",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax")
+            ]
+        ),
+        .macro(
+            name: "Recursion Macro Plugin",
+            dependencies: [
+                .product(name: "Type Algebra Syntax", package: "swift-algebra"),
+                .target(name: "Recursion Macro Core"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+            ]
+        ),
+        .target(
+            name: "Recursion Macro",
+            dependencies: [
                 .product(name: "Chronomorphism Macro", package: "swift-chronomorphism"),
                 .product(name: "Zygomorphism Macro", package: "swift-zygomorphism"),
                 .product(name: "Hylomorphism Macro", package: "swift-hylomorphism"),
@@ -93,28 +117,33 @@ let package = Package(
                 .product(name: "Corecursive Macro", package: "swift-corecursive"),
                 .product(name: "Recursive Macro", package: "swift-recursive"),
                 .product(name: "Functor Base Macro", package: "swift-functor"),
-            .target(name: "Recursion Macro Plugin"),
-            .product(name: "Either", package: "swift-either"),
-            .product(name: "Product", package: "swift-product"),
-        ]),
-        .testTarget(name: "Recursion Macro Tests", dependencies: [
-            .target(name: "Recursion Macro"),
-            .product(name: "Either", package: "swift-either"),
-            .product(name: "Product", package: "swift-product"),
-        ]),
+                .target(name: "Recursion Macro Plugin"),
+                .product(name: "Either", package: "swift-either"),
+                .product(name: "Product", package: "swift-product"),
+            ]
+        ),
+        .testTarget(
+            name: "Recursion Macro Tests",
+            dependencies: [
+                .target(name: "Recursion Macro"),
+                .product(name: "Either", package: "swift-either"),
+                .product(name: "Product", package: "swift-product"),
+            ]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )
 
 for target in package.targets where ![.system, .binary, .plugin, .macro].contains(target.type) {
-    target.swiftSettings = (target.swiftSettings ?? []) + [
-        .strictMemorySafety(),
-        .enableUpcomingFeature("ExistentialAny"),
-        .enableUpcomingFeature("InternalImportsByDefault"),
-        .enableUpcomingFeature("MemberImportVisibility"),
-        .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-        .enableUpcomingFeature("InferIsolatedConformances"),
-        .enableExperimentalFeature("Lifetimes"),
-        .treatAllWarnings(as: .error),
-    ]
+    target.swiftSettings =
+        (target.swiftSettings ?? []) + [
+            .strictMemorySafety(),
+            .enableUpcomingFeature("ExistentialAny"),
+            .enableUpcomingFeature("InternalImportsByDefault"),
+            .enableUpcomingFeature("MemberImportVisibility"),
+            .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+            .enableUpcomingFeature("InferIsolatedConformances"),
+            .enableExperimentalFeature("Lifetimes"),
+            .treatAllWarnings(as: .error),
+        ]
 }

@@ -1,5 +1,6 @@
-import Zipper_Macro
 import Testing
+import Zipper_Macro
+
 @Zipper private indirect enum Tree<A> {
     case leaf(A)
     case branch(label: String, left: Tree<A>, right: Tree<A>)
