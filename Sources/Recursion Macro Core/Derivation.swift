@@ -34,25 +34,27 @@ extension Derivation {
             for prerequisite in prerequisites[name, default: []] { include(prerequisite) }
         }
         for name in requested { include(name) }
-        return try selected.subtracting(existing).sorted().flatMap { name in
+        var declarations: [DeclSyntax] = []
+        for name in selected.subtracting(existing).sorted() {
             switch name {
-            case "Anamorphism": anamorphism(of: declaration)
-            case "Apomorphism": apomorphism(of: declaration)
-            case "Catamorphism": catamorphism(of: declaration)
-            case "Chronomorphism": chronomorphism(of: declaration)
-            case "Cofree": try cofree(of: declaration)
-            case "Corecursive": corecursive(of: declaration)
-            case "Free": try free(of: declaration)
-            case "FunctorBase": functorBase(of: declaration)
-            case "Futumorphism": futumorphism(of: declaration)
-            case "Histomorphism": histomorphism(of: declaration)
-            case "Hylomorphism": hylomorphism(of: declaration)
-            case "Paramorphism": paramorphism(of: declaration)
-            case "Recursive": recursive(of: declaration)
-            case "Zygomorphism": zygomorphism(of: declaration)
-            default: []
+            case "Anamorphism": declarations += anamorphism(of: declaration)
+            case "Apomorphism": declarations += apomorphism(of: declaration)
+            case "Catamorphism": declarations += catamorphism(of: declaration)
+            case "Chronomorphism": declarations += chronomorphism(of: declaration)
+            case "Cofree": declarations += try cofree(of: declaration)
+            case "Corecursive": declarations += corecursive(of: declaration)
+            case "Free": declarations += try free(of: declaration)
+            case "FunctorBase": declarations += functorBase(of: declaration)
+            case "Futumorphism": declarations += futumorphism(of: declaration)
+            case "Histomorphism": declarations += histomorphism(of: declaration)
+            case "Hylomorphism": declarations += hylomorphism(of: declaration)
+            case "Paramorphism": declarations += paramorphism(of: declaration)
+            case "Recursive": declarations += recursive(of: declaration)
+            case "Zygomorphism": declarations += zygomorphism(of: declaration)
+            default: break
             }
         }
+        return declarations
     }
 }
 
@@ -124,7 +126,9 @@ extension Derivation {
         ]
     }
 
-    private static func cofree(of declaration: EnumDeclSyntax) throws -> [DeclSyntax] {
+    private static func cofree(
+        of declaration: EnumDeclSyntax
+    ) throws -> [DeclSyntax] {
         let variable = Type.Variable("Recursion")
         let layer = try Type.Syntax.Recursion.polynomial(of: declaration, variable: variable)
         let carrier = try Type.Recursion.cofree(
@@ -180,7 +184,9 @@ extension Derivation {
         ]
     }
 
-    private static func free(of declaration: EnumDeclSyntax) throws -> [DeclSyntax] {
+    private static func free(
+        of declaration: EnumDeclSyntax
+    ) throws -> [DeclSyntax] {
         let variable = Type.Variable("Recursion")
         let layer = try Type.Syntax.Recursion.polynomial(of: declaration, variable: variable)
         let carrier = try Type.Recursion.free(
@@ -231,7 +237,8 @@ extension Derivation {
     private static func functorBase(of declaration: EnumDeclSyntax) -> [DeclSyntax] {
         let cases = Type.Syntax.Recursion.elements(of: declaration).map { element in
             let parameters = Type.Syntax.Recursion.parameters(of: element).map { parameter in
-                let type = Type.Syntax.Recursion.isRecursive(parameter.type, in: declaration)
+                let type =
+                    Type.Syntax.Recursion.isRecursive(parameter.type, in: declaration)
                     ? "Recursive"
                     : parameter.type.trimmedDescription
                 guard let label = Type.Syntax.Recursion.label(of: parameter) else { return type }

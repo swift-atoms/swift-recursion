@@ -57,9 +57,11 @@ extension Macro {
         } else {
             requested = []
         }
-        let existing = Set(enumeration.attributes.compactMap {
-            $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription
-        })
+        let existing = Set(
+            enumeration.attributes.compactMap {
+                $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription
+            }
+        )
         return try Derivation.members(
             requested: requested,
             existing: existing,
