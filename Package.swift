@@ -87,7 +87,9 @@ let package = Package(
         .target(
             name: "Recursion Macro Core",
             dependencies: [
-                .product(name: "SwiftSyntax", package: "swift-syntax")
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxBuilder", package: "swift-syntax"),
+                .product(name: "Type Algebra Syntax", package: "swift-algebra"),
             ]
         ),
         .macro(

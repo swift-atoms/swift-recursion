@@ -35,9 +35,41 @@ func `recursion derives the complete scheme family coherently`() {
             }
         }
     )
+    let paramorphic = three.paramorphism { layer -> Int in
+        switch layer {
+        case .zero: 0
+        case .successor(let child): child.values.1 + 1
+        }
+    }
+    let apomorphic = Natural.apomorphism(3) { seed -> Natural.Base<Either<Natural, Int>> in
+        seed == 0 ? .zero : .successor(.right(seed - 1))
+    }
+    let apomorphicFolded = apomorphic.catamorphism { layer -> Int in
+        switch layer {
+        case .zero: 0
+        case .successor(let child): child + 1
+        }
+    }
+    let zygomorphic = three.zygomorphism(
+        auxiliary: { layer -> Int in
+            switch layer {
+            case .zero: 0
+            case .successor(let child): child + 1
+            }
+        },
+        algebra: { layer -> Int in
+            switch layer {
+            case .zero: 0
+            case .successor(let child): child.values.1 + 1
+            }
+        }
+    )
 
     #expect(folded == 3)
     #expect(fused == folded)
+    #expect(paramorphic == folded)
+    #expect(apomorphicFolded == folded)
+    #expect(zygomorphic == folded)
 }
 
 @Recursion(.catamorphism, .anamorphism, .histomorphism, .catamorphism)

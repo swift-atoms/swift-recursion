@@ -3,7 +3,7 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import Type_Algebra_Syntax
 
-public struct Macro: MemberAttributeMacro {}
+public struct Macro: MemberAttributeMacro, MemberMacro {}
 
 extension Macro {
     public static func expansion(
@@ -29,7 +29,41 @@ extension Macro {
         } else {
             requested = ["Catamorphism", "Anamorphism", "Paramorphism", "Apomorphism", "Histomorphism", "Futumorphism", "Hylomorphism", "Zygomorphism", "Chronomorphism"]
         }
-        let existing = Set(enumeration.attributes.compactMap { $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription })
-        return Derivation.attributes(requested: requested, existing: existing)
+        let arguments = requested.map { String(reflecting: $0) }.joined(separator: ", ")
+        return [AttributeSyntax(stringLiteral: "@_Recursion(\(arguments))")]
+    }
+
+    public static func expansion(
+        of node: AttributeSyntax,
+        providingMembersOf declaration: some DeclGroupSyntax,
+        conformingTo protocols: [TypeSyntax],
+        in context: some MacroExpansionContext
+    ) throws -> [DeclSyntax] {
+        guard let enumeration = declaration.as(EnumDeclSyntax.self) else {
+            throw MacroExpansionErrorMessage("@_Recursion only applies to an enum.")
+        }
+        let requested: [String]
+        if case .argumentList(let arguments) = node.arguments {
+            requested = try arguments.map { argument in
+                guard
+                    let literal = argument.expression.as(StringLiteralExprSyntax.self),
+                    literal.segments.count == 1,
+                    let segment = literal.segments.first?.as(StringSegmentSyntax.self)
+                else {
+                    throw MacroExpansionErrorMessage("@_Recursion requires derivation names.")
+                }
+                return segment.content.text
+            }
+        } else {
+            requested = []
+        }
+        let existing = Set(enumeration.attributes.compactMap {
+            $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription
+        })
+        return try Derivation.members(
+            requested: requested,
+            existing: existing,
+            of: enumeration
+        )
     }
 }

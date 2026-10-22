@@ -27,3 +27,10 @@ public macro Recursion(_ schemes: RecursionScheme...) =
         module: "Recursion_Macro_Plugin",
         type: "Macro"
     )
+
+@attached(member, names: arbitrary)
+public macro _Recursion(_ derivations: String...) =
+    #externalMacro(
+        module: "Recursion_Macro_Plugin",
+        type: "Macro"
+    )
