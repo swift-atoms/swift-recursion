@@ -3,9 +3,9 @@ import Testing
 
 @Recursion
 private enum Laws {
-    indirect enum Tree: Equatable {
-        case leaf(Int)
-        case node(Tree, Tree)
+    indirect enum Tree: Swift.Equatable {
+        case leaf(Swift.Int)
+        case node(Self, Self)
     }
 }
 private typealias T = Laws.Tree

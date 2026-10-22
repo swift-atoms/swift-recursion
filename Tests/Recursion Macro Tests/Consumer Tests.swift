@@ -7,7 +7,7 @@ import Testing
 private enum Domain {
     indirect enum Natural {
         case zero
-        case successor(Natural)
+        case successor(Self)
     }
 }
 private typealias Natural = Domain.Natural
@@ -44,7 +44,7 @@ func `recursion derives the complete scheme family coherently`() {
 private enum Selected {
     indirect enum Natural {
         case zero
-        case successor(Natural)
+        case successor(Self)
     }
 }
 @Test func selectedSchemesShareOneBaseAndProjection() {
