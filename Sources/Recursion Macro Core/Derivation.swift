@@ -28,7 +28,9 @@ extension Derivation {
         }
         for name in requested { include(name) }
         return selected.subtracting(existing).sorted().map {
-            AttributeSyntax(attributeName: IdentifierTypeSyntax(name: .identifier($0)))
+            var attribute = AttributeSyntax(attributeName: IdentifierTypeSyntax(name: .identifier($0)))
+            attribute.trailingTrivia = .newline
+            return attribute
         }
     }
 }
