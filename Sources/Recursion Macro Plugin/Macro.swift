@@ -6,6 +6,8 @@ import Type_Algebra_Syntax
 public struct Macro: MemberAttributeMacro {}
 
 extension Macro {
+    public static var formatMode: FormatMode { .disabled }
+
     public static func expansion(
         of node: AttributeSyntax,
         attachedTo declaration: some DeclGroupSyntax,
